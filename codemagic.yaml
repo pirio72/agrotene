@@ -25,11 +25,13 @@ workflows:
       - name: Build iOS Workspace (Signed IPA)
         script: |
           cd ios/App
-          # Preparar los perfiles de aprovisionamiento descargándolos del equipo
-          xcode-project use-profiles
+          # Listar información del proyecto para verificar IDs
+          xcodebuild -list -project App.xcodeproj
+          # Intentar descargar perfiles con información detallada
+          xcode-project use-profiles --warn-only
           # Resolver dependencias de Swift Package Manager
           xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
-          # Compilar el IPA usando el perfil descargado
+          # Compilar el IPA
           xcode-project build-ipa --project App.xcodeproj --scheme App
           
     artifacts:

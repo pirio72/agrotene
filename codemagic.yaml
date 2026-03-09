@@ -10,6 +10,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.agrotene.app
+        provisioning_profiles:
+          - "AgroTene App Store Profile"
     integrations:
       app_store_connect: Codemagic iOS
     scripts:

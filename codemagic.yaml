@@ -25,14 +25,17 @@ workflows:
       - name: Build iOS Workspace (Signed IPA)
         script: |
           cd ios/App
-          # Listar información del proyecto para verificar IDs
-          xcodebuild -list -project App.xcodeproj
-          # Intentar descargar perfiles con información detallada
-          xcode-project use-profiles --warn-only
-          # Resolver dependencias de Swift Package Manager
+          echo "Verificando Bundle Identifier..."
+          grep -r "PRODUCT_BUNDLE_IDENTIFIER" .
+          
+          # Intentar descargar perfiles forzando el Bundle ID
+          xcode-project use-profiles --bundle-identifier com.agrotene.app --warn-only
+          
+          # Resolver dependencias
           xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
+          
           # Compilar el IPA
-          xcode-project build-ipa --project App.xcodeproj --scheme App
+          xcode-project build-ipa --project App.xcodeproj --scheme App --bundle-identifier com.agrotene.app
           
     artifacts:
       - ios/App/build/ios/ipa/*.ipa

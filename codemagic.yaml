@@ -10,7 +10,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.agrotene.app
-        certificate: "Mercatenerife Distribution Cert"
     integrations:
       app_store_connect: Codemagic iOS
     scripts:

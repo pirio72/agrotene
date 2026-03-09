@@ -7,9 +7,6 @@ workflows:
     environment:
       node: latest
       xcode: latest
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.agrotene.app
     integrations:
       app_store_connect: Codemagic iOS
     scripts:

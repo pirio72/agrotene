@@ -7,6 +7,9 @@ workflows:
     environment:
       node: latest
       xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.agrotene.app
     integrations:
       app_store_connect: Codemagic iOS
     scripts:
@@ -22,18 +25,11 @@ workflows:
       - name: Build iOS Workspace (Signed IPA)
         script: |
           cd ios/App
-          echo "--- DEBUG: LISTANDO DATOS DE APPLE ---"
-          # Intentar listar bundle IDs para ver si la llave tiene acceso
-          app-store-connect list-bundle-ids || echo "No se pudo listar Bundle IDs"
-          
-          echo "--- DESCARGANDO PERFILES ---"
-          # Intentar descargar usando la herramienta más robusta
-          app-store-connect fetch-signing-files "com.agrotene.app" --type IOS_APP_STORE --install || echo "Fallo al descargar perfiles"
-          
-          # Resolver dependencias
+          # Forzar la descarga de perfiles de aprovisionamiento
+          xcode-project use-profiles
+          # Resolver dependencias de Swift Package Manager
           xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
-          
-          # Compilar el IPA forzando el uso de los perfiles descargados
+          # Compilar el IPA usando el perfil descargado
           xcode-project build-ipa --project App.xcodeproj --scheme App
           
     artifacts:
@@ -43,4 +39,3 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        # Si prefieres que solo se suba pero no se mande a revisión TestFlight automáticamente, cambia a false

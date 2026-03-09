@@ -25,10 +25,14 @@ workflows:
       - name: Build iOS Workspace (Signed IPA)
         script: |
           cd ios/App
-          echo "Verificando Bundle Identifier..."
-          grep -r "PRODUCT_BUNDLE_IDENTIFIER" .
+          echo "--- DEBUG: LISTANDO CERTIFICADOS Y PERFILES ---"
+          # Listar todos los certificados disponibles para la integración
+          xcode-project certificates list
+          # Listar todos los perfiles disponibles para la integración
+          xcode-project profiles list
           
-          # Intentar descargar perfiles forzando el Bundle ID
+          echo "--- INTENTANDO FIRMA ---"
+          # Intentar descargar perfiles con información detallada
           xcode-project use-profiles --bundle-identifier com.agrotene.app --warn-only
           
           # Resolver dependencias

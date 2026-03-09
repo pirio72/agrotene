@@ -1,0 +1,41 @@
+# Final iOS Build Configuration for AgroTene
+workflows:
+  ios-release:
+    name: Build iOS App Store
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    environment:
+      node: latest
+      xcode: latest
+      ios_signing:
+        provisioning_profiles:
+          - "agrotene_app_store_profile"
+    integrations:
+      app_store_connect: Codemagic iOS
+    scripts:
+      - name: Install dependencies
+        script: npm install
+        
+      - name: Build Web Assets (Vite)
+        script: npm run build
+        
+      - name: Sync Capacitor
+        script: npx cap sync ios
+        
+      - name: Build iOS Workspace (Signed IPA)
+        script: |
+          cd ios/App
+          # Preparar los perfiles de aprovisionamiento descargándolos del equipo
+          xcode-project use-profiles
+          # Resolver dependencias de Swift Package Manager
+          xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
+          # Compilar el IPA usando el perfil descargado
+          xcode-project build-ipa --project App.xcodeproj --scheme App
+          
+    artifacts:
+      - ios/App/build/ios/ipa/*.ipa
+      
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

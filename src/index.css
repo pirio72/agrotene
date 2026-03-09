@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@layer base {
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+}
+
+@theme {
+    --color-merca-blue: #065AA2;
+    --color-merca-green: #8ab733;
+}
+
+.pt-safe {
+    padding-top: env(safe-area-inset-top);
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}

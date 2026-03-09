@@ -7,6 +7,9 @@ workflows:
     environment:
       node: latest
       xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.agrotene.app
     integrations:
       app_store_connect: Codemagic iOS
     scripts:
@@ -22,24 +25,11 @@ workflows:
       - name: Build iOS Workspace (Signed IPA)
         script: |
           cd ios/App
-          echo "--- DEBUG: LISTANDO DATOS DE APPLE ---"
-          # Listar Bundle IDs
-          app-store-connect bundle-ids list
-          
-          # Listar Certificados
-          app-store-connect certificates list
-          
-          # Listar Perfiles
-          app-store-connect profiles list
-          
-          echo "--- INTENTANDO DESCARGA MANUAL ---"
-          # Intentar descargar perfiles (sin el flag --install que falló)
-          app-store-connect fetch-signing-files "com.agrotene.app" --type IOS_APP_STORE
-          
-          # Resolver dependencias
+          # Preparar los perfiles de aprovisionamiento descargándolos del equipo
+          xcode-project use-profiles
+          # Resolver dependencias de Swift Package Manager
           xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
-          
-          # Intentar compilar (esto probablemente fallará si lo anterior no funcionó, pero nos dará info)
+          # Compilar el IPA usando el perfil descargado
           xcode-project build-ipa --project App.xcodeproj --scheme App
           
     artifacts:

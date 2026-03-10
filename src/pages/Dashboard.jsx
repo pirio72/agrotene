@@ -127,12 +127,12 @@ const Dashboard = () => {
     const filteredProducts = useMemo(() => {
         const filtered = processedData.filter(p => {
             const searchLow = searchTerm.toLowerCase();
-            const matchesSearch = 
+            const matchesSearch =
                 (p.producto_nombre && p.producto_nombre.toLowerCase().includes(searchLow)) ||
                 (p.categoria && p.categoria.toLowerCase().includes(searchLow)) ||
                 (p.subcategoria && p.subcategoria.toLowerCase().includes(searchLow)) ||
                 (p.grupo && p.grupo.toLowerCase().includes(searchLow));
-                
+
             const matchesAvailability = !showAvailableOnly || p.isAvailable;
             const matchesOrigin = originFilter === 'all' || p.producto_origen === originFilter;
 
@@ -191,34 +191,34 @@ const Dashboard = () => {
     // Autocompletado del buscador principal
     const searchSuggestions = useMemo(() => {
         if (searchTerm.length < 2) return [];
-        
+
         const term = searchTerm.toLowerCase();
         const results = new Set();
-        
+
         processedData.forEach(p => {
             if (p.producto_nombre && p.producto_nombre.toLowerCase().includes(term)) results.add(p.producto_nombre);
             if (p.categoria && p.categoria.toLowerCase().includes(term)) results.add(p.categoria);
             if (p.subcategoria && p.subcategoria.toLowerCase().includes(term)) results.add(p.subcategoria);
             if (p.grupo && p.grupo.toLowerCase().includes(term)) results.add(p.grupo);
         });
-        
+
         return Array.from(results).slice(0, 8); // Máximo 8 sugerencias
     }, [searchTerm, processedData]);
 
     // Autocompletado del explorador
     const explorerSuggestions = useMemo(() => {
         if (groupSearchTerm.length < 2) return [];
-        
+
         const term = groupSearchTerm.toLowerCase();
         const results = new Set();
-        
+
         processedData.forEach(p => {
             if (p.producto_nombre && p.producto_nombre.toLowerCase().includes(term)) results.add(p.producto_nombre);
             if (p.categoria && p.categoria.toLowerCase().includes(term)) results.add(p.categoria);
             if (p.subcategoria && p.subcategoria.toLowerCase().includes(term)) results.add(p.subcategoria);
             if (p.grupo && p.grupo.toLowerCase().includes(term)) results.add(p.grupo);
         });
-        
+
         return Array.from(results).slice(0, 8); // Máximo 8 sugerencias
     }, [groupSearchTerm, processedData]);
 
@@ -234,12 +234,12 @@ const Dashboard = () => {
             const matchesAvailability = !showAvailableOnly || item.isAvailable;
 
             if (matchesOrigin && matchesAvailability) {
-                const isMatch = 
+                const isMatch =
                     (item.producto_nombre && item.producto_nombre.toLowerCase().includes(term)) ||
                     (item.categoria && item.categoria.toLowerCase().includes(term)) ||
                     (item.subcategoria && item.subcategoria.toLowerCase().includes(term)) ||
                     (item.grupo && item.grupo.toLowerCase().includes(term));
-                
+
                 if (isMatch) {
                     const cat = item.categoria || 'GENERAL';
                     const subcat = item.subcategoria || 'GENERAL';
@@ -451,7 +451,7 @@ const Dashboard = () => {
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${opportunityType === 'down'
                                         ? 'bg-white text-emerald-600 shadow-sm'
                                         : 'text-slate-400 hover:text-slate-600'
-                                    }`}
+                                        }`}
                                 >
                                     Bajadas
                                 </button>
@@ -460,7 +460,7 @@ const Dashboard = () => {
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${opportunityType === 'up'
                                         ? 'bg-white text-rose-600 shadow-sm'
                                         : 'text-slate-400 hover:text-slate-600'
-                                    }`}
+                                        }`}
                                 >
                                     Subidas
                                 </button>
@@ -534,7 +534,7 @@ const Dashboard = () => {
                                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                             />
                             <Search className="absolute left-3 top-3.5 text-slate-400" size={18} />
-                            
+
                             {/* Dropdown de autocompletado */}
                             {showSuggestions && searchSuggestions.length > 0 && (
                                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden py-1 z-50">
@@ -747,7 +747,14 @@ const Dashboard = () => {
                             <ChartView data={chartData} productName={selectedProduct.producto_nombre} timeRange={timeRange} />
 
                             <button
-                                onClick={() => window.history.back()}
+                                onClick={() => {
+                                    if (window.history.state?.view === 'analysis') {
+                                        window.history.back();
+                                    } else {
+                                        setActiveTab('products');
+                                        setSelectedProduct(null);
+                                    }
+                                }}
                                 className="w-full py-3 bg-slate-100 text-slate-600 font-medium rounded-xl hover:bg-slate-200 transition-colors"
                             >
                                 Volver al listado
@@ -814,7 +821,7 @@ const Dashboard = () => {
                                         onBlur={() => setTimeout(() => setShowExplorerSuggestions(false), 200)}
                                     />
                                     <Search className="absolute left-3 top-3.5 text-slate-400" size={18} />
-                                    
+
                                     {/* Dropdown de autocompletado (Explorador) */}
                                     {showExplorerSuggestions && explorerSuggestions.length > 0 && (
                                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden py-1 z-50">
@@ -931,24 +938,24 @@ const Dashboard = () => {
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#065AA2]" />
                                     Categorías disponibles
                                 </h4>
-                                
+
                                 {Object.keys(filteredCategoryTree).map(cat => {
                                     const isCatSelected = selectedFilters.categories.includes(cat);
                                     const isExpanded = expandedCategories.includes(cat) || groupSearchTerm.length > 0;
                                     const hasSubcategories = filteredCategoryTree[cat].length > 0;
-                                    
+
                                     return (
                                         <div key={cat} className="mb-2">
                                             {/* Nivel Categoría */}
                                             <div className="flex items-center gap-2 p-2 bg-white border border-slate-200 rounded-lg shadow-sm">
                                                 {/* Botón de despliegue */}
                                                 {hasSubcategories ? (
-                                                    <button 
+                                                    <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setExpandedCategories(prev => 
-                                                                prev.includes(cat) 
-                                                                    ? prev.filter(c => c !== cat) 
+                                                            setExpandedCategories(prev =>
+                                                                prev.includes(cat)
+                                                                    ? prev.filter(c => c !== cat)
                                                                     : [...prev, cat]
                                                             );
                                                         }}
@@ -969,8 +976,8 @@ const Dashboard = () => {
                                                             const checked = e.target.checked;
                                                             setSelectedFilters(prev => ({
                                                                 ...prev,
-                                                                categories: checked 
-                                                                    ? [...prev.categories, cat] 
+                                                                categories: checked
+                                                                    ? [...prev.categories, cat]
                                                                     : prev.categories.filter(c => c !== cat)
                                                             }));
                                                         }}
@@ -985,27 +992,27 @@ const Dashboard = () => {
                                                     {filteredCategoryTree[cat].map(subcat => {
                                                         const isSubcatSelected = selectedFilters.subcategories.includes(subcat);
 
-                                                    return (
-                                                        <div key={`${cat}-${subcat}`} className="mb-1">
-                                                            <div className="flex items-center gap-2 p-1.5 bg-slate-50/50 rounded-md">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="w-3.5 h-3.5 text-[#004070] rounded border-slate-300 focus:ring-[#004070]"
-                                                                    checked={isSubcatSelected}
-                                                                    onChange={(e) => {
-                                                                        const checked = e.target.checked;
-                                                                        setSelectedFilters(prev => ({
-                                                                            ...prev,
-                                                                            subcategories: checked 
-                                                                                ? [...prev.subcategories, subcat] 
-                                                                                : prev.subcategories.filter(s => s !== subcat)
-                                                                        }));
-                                                                    }}
-                                                                />
-                                                                <span className="font-semibold text-slate-700 text-xs">{subcat}</span>
+                                                        return (
+                                                            <div key={`${cat}-${subcat}`} className="mb-1">
+                                                                <div className="flex items-center gap-2 p-1.5 bg-slate-50/50 rounded-md">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="w-3.5 h-3.5 text-[#004070] rounded border-slate-300 focus:ring-[#004070]"
+                                                                        checked={isSubcatSelected}
+                                                                        onChange={(e) => {
+                                                                            const checked = e.target.checked;
+                                                                            setSelectedFilters(prev => ({
+                                                                                ...prev,
+                                                                                subcategories: checked
+                                                                                    ? [...prev.subcategories, subcat]
+                                                                                    : prev.subcategories.filter(s => s !== subcat)
+                                                                            }));
+                                                                        }}
+                                                                    />
+                                                                    <span className="font-semibold text-slate-700 text-xs">{subcat}</span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    );
+                                                        );
                                                     })}
                                                 </div>
                                             )}

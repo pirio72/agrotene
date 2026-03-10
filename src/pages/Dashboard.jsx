@@ -341,7 +341,8 @@ const Dashboard = () => {
     };
 
     const handleCloseExplorer = () => {
-        if (showCategoryExplorer) {
+        setShowCategoryExplorer(false);
+        if (window.history.state?.view === 'explorer') {
             window.history.back();
         }
     };

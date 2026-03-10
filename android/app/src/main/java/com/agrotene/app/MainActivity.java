@@ -1,4 +1,4 @@
-package com.mercatenerife.app;
+package com.agrotene.app;
 
 import com.getcapacitor.BridgeActivity;
 
